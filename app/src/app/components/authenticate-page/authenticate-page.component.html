@@ -1,0 +1,39 @@
+<div class="main-window">
+
+
+    <div class="card">
+        <span *ngIf="error" style="color: red;">Confirm Password Not Matched</span>
+        <div *ngIf="isLogin">
+            <form [formGroup]="loginRequest" (ngSubmit)="login()">
+                <div style="color: black; font-weight: bold; text-align: center;">Sign In</div>
+                <input type="text" formControlName="userName" placeholder="User Name">
+                <input type="password" formControlName="password" placeholder="Password">
+                <div class="btn-div">
+                    <button type="submit">Log In</button>
+                </div>
+
+            </form>
+        </div>
+
+        <div *ngIf="!isLogin">
+            <form [formGroup]="signUpRequest" (ngSubmit)="signUp()">
+                <div style="color: black; font-weight: bold; text-align: center;">Sign Up</div>
+                <input type="text" formControlName="userName" placeholder="User Name">
+                <input type="email" formControlName="email" placeholder="Email">
+                <div *ngIf="signUpRequest.get('email')?.touched && signUpRequest.get('email')?.invalid" style="color: red;">
+                    <small *ngIf="signUpRequest.get('email')?.hasError('required')">Email is required.</small>
+                    <small *ngIf="signUpRequest.get('email')?.hasError('email')">Invalid email format.</small>
+                </div>
+
+                <input type="password" formControlName="password" placeholder="Password" #pass>
+                <input type="password" formControlName="confirmPassword" placeholder="Confirm Password" #cnfPass
+                    (keyup)="confirmPassword(pass.value,cnfPass.value)">
+                <div class="btn-div">
+                    <button type="submit" [disabled]="signUpRequest.invalid">Sign up</button>
+                </div>
+            </form>
+        </div>
+        <span (click)="isLogin = !isLogin" style="color: blue; cursor: pointer; text-decoration: underline;">
+            {{isLogin?'Sign Up here..':'Sign In here..'}}</span>
+    </div>
+</div>

@@ -1,0 +1,34 @@
+<div class="main-window">
+    <div class="table-container">
+        <table id="tableData">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>User Name</th>
+                    <th>Feedback</th>
+                    <th>Date</th>
+                    <th>action</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let f of feedbackData">
+                    <td>{{f.id}}</td>
+                    <td>{{f.userName}}</td>
+                    <td>{{f.feedback}}</td>
+                    <td>{{f.dateCreated}}</td>
+                    <td style="width: 200px;">
+                        <div class="action-div">
+                            <button (click)="openFeedback(f)">Edit</button>
+                            <button (click)="deleteFeedback(f)">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="text-align: center;"> <span (click)="Logout()"  style="color: blue; cursor: pointer; text-decoration: underline;">Logout</span></div>
+       
+    </div>
+    
+
+</div>

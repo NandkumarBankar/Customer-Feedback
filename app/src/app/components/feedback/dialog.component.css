@@ -1,0 +1,30 @@
+.main-window {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    width: 500px;
+    height: 350px;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 5px 5px gray;
+    background-color: aliceblue;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    font-family: "Roboto", serif;
+    font-weight: 500;
+    font-style: normal;
+}
+
+textarea {
+    padding: 10px;
+    width: 100%;
+    height: 100%;
+}
