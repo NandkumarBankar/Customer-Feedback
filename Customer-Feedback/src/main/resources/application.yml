@@ -1,0 +1,19 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: CUSTOMER FEEDBACK
+  datasource:
+    url: jdbc:mysql://localhost:3306/customer_feedback
+    username: root
+    password: Password@123
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        ddl-auto: none
+    show-sql: true
+
+
+
