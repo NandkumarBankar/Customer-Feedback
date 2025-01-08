@@ -9,7 +9,7 @@ public class CustomerFeedbackApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(CustomerFeedbackApplication.class, args);
-			System.out.println("Updated Jenkins Test : 1");
+			System.out.println("Updated Jenkins Test :1");
 	}
 
 }
