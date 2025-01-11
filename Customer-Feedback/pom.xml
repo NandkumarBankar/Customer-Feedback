@@ -95,6 +95,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>Customer-Feedback</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
