@@ -23,7 +23,36 @@ pipeline {
                 }
             }
         }
+stage('Check and Terminate Process') {
+    steps {
+        script {
+            def port = readFile('Customer-Feedback/src/main/resources/application.yml')
+                .find(/server\.port: (\d+)/) { match, p -> return p } ?: '8081'
 
+            echo "Using port: ${port}"
+
+            // Run netstat to find the PID associated with the port correctly
+            def pid = bat(script: """
+                @echo off
+                for /f "tokens=5" %%a in ('netstat -ano ^| findstr :${port}') do (
+                    echo %%a
+                )
+            """, returnStdout: true).trim()
+
+            // Extract the last valid PID from the output
+            def validPid = pid.tokenize("\n").last().trim()
+            echo "Identified PID: ${validPid}"
+
+            // Check if PID is valid before terminating
+            if (validPid.isInteger()) {
+                echo "Terminating process with PID: ${validPid}"
+                bat "taskkill /F /PID ${validPid}"
+            } else {
+                echo "No valid process found on port ${port}"
+            }
+        }
+    }
+}
         stage('Deploy Project : Customer-Feedback') {
             steps {
                 dir('Customer-Feedback') {
