@@ -23,8 +23,43 @@ pipeline {
                 }
             }
         }
-   
-        
+
+        stage('Check and Terminate Process') {
+            steps {
+                script {
+                    // Reading port from the application.yml file
+                    def port = readFile('Customer-Feedback/src/main/resources/application.yml')
+                        .find(/server\.port: (\d+)/) { match, p -> return p } ?: '8081'
+
+                    echo "Using port: ${port}"
+
+                    // Run netstat to find the PID associated with the port
+                    def pid = bat(script: """
+                        @echo off
+                        for /f "tokens=5" %%a in ('netstat -ano ^| findstr :${port}') do echo %%a
+                    """, returnStdout: true).trim()
+
+                    echo "Netstat output: ${pid}"
+
+                    // Handle case when no PID is found (empty string from netstat)
+                    if (!pid) {
+                        echo "No process found on port ${port}, continuing with deployment."
+                    } else {
+                        // Extract and validate the PID
+                        def validPid = pid.tokenize("\n").last().trim()
+
+                        echo "Identified PID: ${validPid}"
+
+                        if (validPid.isInteger() && validPid.toInteger() > 0) {
+                            echo "Terminating process with PID: ${validPid}"
+                            bat "taskkill /F /PID ${validPid}"
+                        } else {
+                            echo "No valid process found on port ${port}."
+                        }
+                    }
+                }
+            }
+        }
         stage('Deploy Project : Customer-Feedback') {
             steps {
                 dir('Customer-Feedback') {
