@@ -26,6 +26,12 @@ pipeline {
                 stage('Check and Terminate Process') {
                     steps {
                         script {
+                          // Read the port number from application.yml or set a default value
+                            def port = readFile('src/main/resources/application.yml')
+                            .find(/server.port: (\d+)/) { match, p -> return p } ?: '8081'
+
+                             echo "Using port: ${port}"
+
                             // Running netstat to find the PID for the port
                             def pid = bat(script: '''
                                 for /f "tokens=5" %%a in ('netstat -ano ^| findstr :%PORT%') do (
@@ -33,6 +39,8 @@ pipeline {
                                 )
                                 echo %pid%
                             ''', returnStdout: true).trim()
+
+                             echo "Found PID: ${pid}"
 
                             // If a PID is found, terminate the process
                             if (pid) {
@@ -45,16 +53,16 @@ pipeline {
                     }
                 }
 
+         stage('Deploy Project : Customer-Feedback') {
+            steps {
+                dir('Customer-Feedback') {
+                // Run the new JAR file in the background
+                bat 'java -jar target/Customer-Feedback.jar'
+                    }
+                }
+            }
+        }
 
-              stage('Deploy Project : Customer-Feedback') {
-                          steps {
-                                       dir('Customer-Feedback') {
-                                           // Run the new JAR file in the background
-                                           bat 'java -jar target/Customer-Feedback.jar'
-                                       }
-                                   }
-                               }
-                           }
 
     post {
         always {
