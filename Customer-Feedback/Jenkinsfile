@@ -61,9 +61,9 @@ stage('Check and Terminate Process') {
         stage('Deploy Project : Customer-Feedback') {
             steps {
                 dir('Customer-Feedback') {
-                   // Run the JAR in the background and stream logs in real-time
-                               bat 'java -jar target/Customer-Feedback.jar'
-                               echo "Application started successfully!"
+                    // Run the new JAR file in the background
+                    bat 'java -jar target/Customer-Feedback.jar'
+                       echo "Application Started Successfully"
                 }
             }
         }
