@@ -26,20 +26,21 @@ pipeline {
         stage('Deploy Project : Customer-Feedback') {
             steps {
                 dir('Customer-Feedback') {
-                  bat "start /B java -jar target/Customer-Feedback.jar"
+                    bat 'java -jar target/Customer-Feedback.jar'  // Running without start /B
                 }
             }
         }
-         post {
-                always {
-                    echo "Cleaning up after execution"
-                }
-                success {
-                    echo "Build and deployment successful!"
-                }
-                failure {
-                    echo "Build or deployment failed!"
-                }
-            }
+    }
+
+    post {
+        always {
+            echo "Cleaning up after execution"
+        }
+        success {
+            echo "Build and deployment successful!"
+        }
+        failure {
+            echo "Build or deployment failed!"
+        }
     }
 }
