@@ -29,7 +29,7 @@ public class AuthController {
     JwtService jwtService;
 
     @GetMapping("/connection")
-    public ResponseEntity<LocalDateTime> getSystemTime (@RequestParam (value="POSCode") String POSCode) {
+    public ResponseEntity<LocalDateTime> getSystemTime () {
         return new ResponseEntity<>(LocalDateTime.now().withNano(0), HttpStatus.CREATED);
     }
 
