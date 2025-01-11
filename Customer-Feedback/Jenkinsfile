@@ -44,8 +44,9 @@ stage('Check and Terminate Process') {
             def validPid = pid.tokenize("\n").last().trim()
             echo "Identified PID: ${validPid}"
 
-            // Check if PID is valid before terminating
-            if (validPid.isInteger() && validPid!=0) {
+      // If the PID is valid and non-zero, terminate the process
+                 if (validPid > 0) {
+                
                 echo "Terminating process with PID: ${validPid}"
                 bat "taskkill /F /PID ${validPid}"
             } else {
