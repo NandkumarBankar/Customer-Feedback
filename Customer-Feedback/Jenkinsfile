@@ -6,26 +6,27 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/NandkumarBankar/Customer-Feedback.git'
             }
         }
-        stage('Customer-Feedback') {
+
+        stage('Build : Customer-Feedback ') {
             steps {
                 dir('Customer-Feedback') {
-                    sh 'mvn clean package'
+                    bat 'mvn clean package'
                 }
             }
         }
 
-        stage('Test Project Customer-Feedback') {
+        stage('Test Project : Customer-Feedback') {
             steps {
                 dir('projectA') {
-                    sh 'mvn test'
+                    bat 'mvn test'
                 }
             }
         }
 
-        stage('Deploy Project Customer-Feedback') {
+        stage('Deploy Project : Customer-Feedback') {
             steps {
                 dir('Customer-Feedback') {
-                    sh 'java -jar target/*.jar'
+                    bat 'java -jar target/*.jar'
                 }
             }
         }
