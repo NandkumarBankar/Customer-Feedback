@@ -23,34 +23,34 @@ pipeline {
             }
         }
 
-          stage('Deploy Project : Customer-Feedback') {
-                       steps {
-                           dir('Customer-Feedback') {
-                               script {
-                                   // Read the port number from application.properties or set a default value
-                                   def port = readFile('src/main/resources/application.yml')
-                                       .find(/server\.port=(\d+)/) { match, p -> return p } ?: '8081'
+              stage('Deploy Project : Customer-Feedback') {
+                    steps {
+                        dir('Customer-Feedback') {
+                            script {
+                                // Read the port number from application.yml or set a default value
+                                def port = readFile('src/main/resources/application.yml')
+                                    .find(/server.port: (\d+)/) { match, p -> return p } ?: '8081'
 
-                                   echo "Using port: ${port}"
+                                echo "Using port: ${port}"
 
-                                   // Check if the port is already in use
-                                   def portInUse = bat(script: "netstat -ano | findstr :${port}", returnStdout: true).trim()
+                                // Check if the port is already in use
+                                def portInUse = bat(script: "netstat -ano | findstr :${port}", returnStdout: true).trim()
 
-                                   if (portInUse) {
-                                       echo "Port ${port} is already in use. Terminating the existing process."
-                                       // Extract PID of the process using the port
-                                       def pid = bat(script: "netstat -ano | findstr :${port} | for /f \"tokens=5\" %i in (\"%%i\") do echo %i", returnStdout: true).trim()
-                                       // Kill the existing process
-                                       bat "taskkill /F /PID ${pid}"
-                                   }
-                               }
+                                if (portInUse) {
+                                    echo "Port ${port} is already in use. Terminating the existing process."
+                                    // Extract PID of the process using the port
+                                    def pid = bat(script: "netstat -ano | findstr :${port} | for /f \"tokens=5\" %%i in (\"%%i\") do echo %%i", returnStdout: true).trim()
+                                    // Kill the existing process
+                                    bat "taskkill /F /PID ${pid}"
+                                }
+                            }
 
-                               // Run the new JAR file in the background
-                               bat 'java -jar target/Customer-Feedback.jar'
-                           }
-                       }
-                   }
-               }
+                            // Run the new JAR file in the background
+                            bat 'java -jar target/Customer-Feedback.jar'
+                        }
+                    }
+                }
+            }
 
     post {
         always {
