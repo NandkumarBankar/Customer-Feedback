@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/NandkumarBankar/Customer-Feedback.git'
+            }
+        }
+        stage('Customer-Feedback') {
+            steps {
+                dir('Customer-Feedback') {
+                    sh 'mvn clean package'
+                }
+            }
+        }
+
+        stage('Test Project Customer-Feedback') {
+            steps {
+                dir('projectA') {
+                    sh 'mvn test'
+                }
+            }
+        }
+
+        stage('Deploy Project Customer-Feedback') {
+            steps {
+                dir('Customer-Feedback') {
+                    sh 'java -jar target/*.jar'
+                }
+            }
+        }
+    }
+}
