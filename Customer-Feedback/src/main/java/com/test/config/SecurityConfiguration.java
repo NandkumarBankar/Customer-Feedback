@@ -35,7 +35,7 @@ public class SecurityConfiguration {
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
                 .authorizeRequests(authorize -> authorize
-                        .requestMatchers("/uam/auth/**").permitAll()
+                        .requestMatchers("/uam/auth/**","/uam/auth/connection").permitAll()
                         .requestMatchers("/uam/user/**").hasRole("user")
                         .requestMatchers("/uam/admin/**").hasRole("admin")
 

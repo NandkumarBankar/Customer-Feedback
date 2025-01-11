@@ -28,7 +28,7 @@ pipeline {
                            dir('Customer-Feedback') {
                                script {
                                    // Read the port number from application.properties or set a default value
-                                   def port = readFile('src/main/resources/application.properties')
+                                   def port = readFile('src/main/resources/application.yml')
                                        .find(/server\.port=(\d+)/) { match, p -> return p } ?: '8081'
 
                                    echo "Using port: ${port}"
