@@ -45,7 +45,7 @@ stage('Check and Terminate Process') {
             echo "Identified PID: ${validPid}"
 
             // Check if PID is valid before terminating
-            if (validPid.isInteger()) {
+            if (validPid.isInteger() && validPid!=0) {
                 echo "Terminating process with PID: ${validPid}"
                 bat "taskkill /F /PID ${validPid}"
             } else {
