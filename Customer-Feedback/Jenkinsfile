@@ -24,13 +24,21 @@ pipeline {
         }
 
         stage('Deploy Project : Customer-Feedback') {
-            steps {
-                dir('Customer-Feedback') {
-               bat 'start /B java -jar target/Customer-Feedback.jar'  // Run in background
-                }
-            }
-        }
-    }
+                   steps {
+//                        dir('Customer-Feedback') {
+//                            // Kill the Java process running the specific JAR
+//                            bat 'for /f "tokens=2" %%i in (\'tasklist /FI "IMAGENAME eq java.exe" /FI "WINDOWTITLE eq Customer-Feedback" /NH\') do taskkill /F /PID %%i'
+//
+//                            // Run the new JAR file in the background
+//                            bat 'start /B java -jar target/Customer-Feedback.jar'
+//                        }
+
+                         dir('Customer-Feedback') {
+                             bat 'java -jar target/Customer-Feedback.jar'
+                         }
+                   }
+               }
+           }
 
     post {
         always {

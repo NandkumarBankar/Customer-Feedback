@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 
 import static com.test.constants.UAMConstants.*;
@@ -26,6 +27,11 @@ public class AuthController {
 
     @Autowired
     JwtService jwtService;
+
+    @GetMapping("/connection")
+    public ResponseEntity<LocalDateTime> getSystemTime (@RequestParam (value="POSCode") String POSCode) {
+        return new ResponseEntity<>(LocalDateTime.now().withNano(0), HttpStatus.CREATED);
+    }
 
     @PostMapping("/login")
     ResponseEntity< HashMap<String,String>> authentication(@RequestBody AuthRequest authRequest) {
