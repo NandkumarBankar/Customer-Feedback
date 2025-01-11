@@ -45,10 +45,15 @@ pipeline {
                                                    def pid = portInUse.split("\n").find { it.contains(":${port}") }
                                                        .split("\\s+")[4] // PID is the 5th token in the output
 
+
                                                    echo "Found PID: ${pid}"
 
-                                                   // Kill the existing process
-                                                   bat "taskkill /F /PID ${pid}"
+                                                                 // Kill the existing process if PID is found
+                                                                 if (pid) {
+                                                                     bat "taskkill /F /PID ${pid}"
+                                                                 } else {
+                                                                     echo "No valid PID found for port ${port}."
+                                                                 }
                                                }
                                            }
 
