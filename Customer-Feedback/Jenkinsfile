@@ -24,41 +24,37 @@ pipeline {
             }
         }
 
- stage('Check and Terminate Process') {
-     steps {
-         script {
-             // Read the port number from application.yml or use default 8081
-             def port = readFile('Customer-Feedback/src/main/resources/application.yml')
-                 .find(/server\.port: (\d+)/) { match, p -> return p } ?: '8081'
+stage('Check and Terminate Process') {
+    steps {
+        script {
+            def port = readFile('Customer-Feedback/src/main/resources/application.yml')
+                .find(/server\.port: (\d+)/) { match, p -> return p } ?: '8081'
 
-             echo "Using port: ${port}"
+            echo "Using port: ${port}"
 
-             // Running netstat to find the PID for the port and terminate it
-             def pid = bat(script: """
-                 @echo off
-                 for /f "tokens=5" %%a in ('netstat -ano ^| findstr :${port}') do (
-                     echo %%a
-                     set pid=%%a
-                     goto :found
-                 )
-                 :found
-                 echo !pid!
-             """, returnStdout: true).trim()
+            // Run netstat to find the PID associated with the port correctly
+            def pid = bat(script: """
+                @echo off
+                for /f "tokens=5" %%a in ('netstat -ano ^| findstr :${port}') do (
+                    echo %%a
+                )
+            """, returnStdout: true).trim()
 
-             // Fix delayed variable expansion for Windows batch commands
-             pid = pid.tokenize("\n").last().trim()
-             echo "Found PID: ${pid}"
+            // Extract the last valid PID from the output
+            def validPid = pid.tokenize("\n").last().trim()
+            echo "Identified PID: ${validPid}"
 
-             // If a PID is found, terminate the process
-             if (pid.isInteger()) {
-                 echo "Terminating process with PID: ${pid}"
-                 bat "taskkill /F /PID ${pid}"
-             } else {
-                 echo "No process found using port ${port}."
-             }
-         }
-     }
- }
+            // Check if PID is valid before terminating
+            if (validPid.isInteger()) {
+                echo "Terminating process with PID: ${validPid}"
+                bat "taskkill /F /PID ${validPid}"
+            } else {
+                echo "No valid process found on port ${port}"
+            }
+        }
+    }
+}
+
 
 
 
