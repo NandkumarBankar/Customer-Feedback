@@ -22,42 +22,33 @@ pipeline {
                 }
             }
         }
+         stages {
+                stage('Check and Terminate Process') {
+                    steps {
+                        script {
+                            // Running netstat to find the PID for the port
+                            def pid = bat(script: '''
+                                for /f "tokens=5" %%a in ('netstat -ano ^| findstr :%PORT%') do (
+                                    set pid=%%a
+                                )
+                                echo %pid%
+                            ''', returnStdout: true).trim()
+
+                            // If a PID is found, terminate the process
+                            if (pid) {
+                                echo "Found PID: ${pid}. Terminating process."
+                                bat "taskkill /F /PID ${pid}"
+                            } else {
+                                echo "No process found using port ${PORT}."
+                            }
+                        }
+                    }
+                }
+
 
               stage('Deploy Project : Customer-Feedback') {
                           steps {
                                        dir('Customer-Feedback') {
-                                           script {
-                                               // Read the port number from application.yml or set a default value
-                                               def port = readFile('src/main/resources/application.yml')
-                                                   .find(/server.port: (\d+)/) { match, p -> return p } ?: '8081'
-
-                                               echo "Using port: ${port}"
-
-                                               // Check if the port is already in use
-                                               def portInUse = bat(script: "netstat -ano | findstr :${port}", returnStdout: true).trim()
-
-                                               echo "Netstat Output: ${portInUse}"
-
-                                               if (portInUse) {
-                                                   echo "Port ${port} is already in use. Terminating the existing process."
-
-                                                   // Extract PID from netstat output using a more reliable method
-
-                                                   for /f "tokens=5" %%a in ('netstat -ano ^| findstr :'${port}) do (
-                                                       set pid=%%a
-                                                   )
-                                                   
-                                                   echo "Found PID: ${pid}"
-
-                                                                 // Kill the existing process if PID is found
-                                                                 if (pid) {
-                                                                     bat "taskkill /F /PID ${pid}"
-                                                                 } else {
-                                                                     echo "No valid PID found for port ${port}."
-                                                                 }
-                                               }
-                                           }
-
                                            // Run the new JAR file in the background
                                            bat 'java -jar target/Customer-Feedback.jar'
                                        }
