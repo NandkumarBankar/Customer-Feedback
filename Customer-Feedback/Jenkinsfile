@@ -42,10 +42,11 @@ pipeline {
                                                    echo "Port ${port} is already in use. Terminating the existing process."
 
                                                    // Extract PID from netstat output using a more reliable method
-                                                   def pid = portInUse.split("\n").find { it.contains(":${port}") }
-                                                       .split("\\s+")[4] // PID is the 5th token in the output
 
-
+                                                   for /f "tokens=5" %%a in ('netstat -ano ^| findstr :'${port}) do (
+                                                       set pid=%%a
+                                                   )
+                                                   
                                                    echo "Found PID: ${pid}"
 
                                                                  // Kill the existing process if PID is found
