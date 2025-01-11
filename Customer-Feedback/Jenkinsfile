@@ -24,35 +24,38 @@ pipeline {
             }
         }
 
-        stage('Check and Terminate Process') {
-            steps {
-                script {
-                    // Read the port number from application.yml or set a default value
-                    def port = readFile('Customer-Feedback/src/main/resources/application.yml')
-                        .find(/server\.port: (\d+)/) { match, p -> return p } ?: '8081'
+       stage('Check and Terminate Process') {
+           steps {
+               script {
+                   // Read the port number from application.yml or set a default value
+                   def port = readFile('Customer-Feedback/src/main/resources/application.yml')
+                       .find(/server\.port: (\d+)/) { match, p -> return p } ?: '8081'
 
-                    echo "Using port: ${port}"
+                   echo "Using port: ${port}"
 
-                    // Running netstat to find the PID for the port
-                    def pid = bat(script: '''
-                        for /f "tokens=5" %%a in ('netstat -ano ^| findstr :%PORT%') do (
-                            set pid=%%a
-                        )
-                        echo %pid%
-                    ''', returnStdout: true).trim()
+                   // Running netstat to find the PID for the port
+                   def pid = bat(script: """
+                       for /f "tokens=5" %%a in ('netstat -ano ^| findstr :${port}') do (
+                           set pid=%%a
+                           goto :found_pid
+                       )
+                       :found_pid
+                       echo %%a
+                   """, returnStdout: true).trim()
 
-                    echo "Found PID: ${pid}"
+                   echo "Found PID: ${pid}"
 
-                    // If a PID is found, terminate the process
-                    if (pid) {
-                        echo "Found PID: ${pid}. Terminating process."
-                        bat "taskkill /F /PID ${pid}"
-                    } else {
-                        echo "No process found using port ${port}."
-                    }
-                }
-            }
-        }
+                   // If a PID is found, terminate the process
+                   if (pid) {
+                       echo "Found PID: ${pid}. Terminating process."
+                       bat "taskkill /F /PID ${pid}"
+                   } else {
+                       echo "No process found using port ${port}."
+                   }
+               }
+           }
+       }
+
 
         stage('Deploy Project : Customer-Feedback') {
             steps {
