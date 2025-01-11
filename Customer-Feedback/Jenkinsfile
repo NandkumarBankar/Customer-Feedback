@@ -62,7 +62,7 @@ stage('Check and Terminate Process') {
             steps {
                 dir('Customer-Feedback') {
                    // Run the JAR in the background and stream logs in real-time
-                               bat 'java -jar target/Customer-Feedback.jar > log.txt 2>&1'
+                               bat 'start /b java -jar target/Customer-Feedback.jar > log.txt 2>&1'
                                echo "Application started successfully!"
                 }
             }
