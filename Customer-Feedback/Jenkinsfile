@@ -26,7 +26,7 @@ pipeline {
         stage('Deploy Project : Customer-Feedback') {
             steps {
                 dir('Customer-Feedback') {
-                    bat 'java -jar target/Customer-Feedback.jar'  // Running without start /B
+               bat 'start /B java -jar target/Customer-Feedback.jar'  // Run in background
                 }
             }
         }
