@@ -27,54 +27,50 @@ tools {
             }
         }
 
-        stage('Check and Terminate Process') {
-            steps {
-                script {
-                    // Reading port from the application.yml file
-                    def port = readFile('Customer-Feedback/src/main/resources/application.yml')
-                        .find(/server\.port: (\d+)/) { match, p -> return p } ?: '8081'
+      stage('Check and Terminate Process') {
+    steps {
+        script {
+            // Reading port from the application.yml file
+            def port = readFile('Customer-Feedback/src/main/resources/application.yml')
+                .find(/server\.port: (\d+)/) { match, p -> return p } ?: '8081'
 
-                    echo "Using port: ${port}"
+            echo "Using port: ${port}"
 
-                    // Check if the port is already in use by running netstat
-                    def isPortInUse = bat(script: """
-                        netstat -ano ^| findstr :${port}
-                    """, returnStatus: true) == 0  // Returns 0 if port is in use, non-zero if free
+            // Check if the port is already in use by running netstat
+            def isPortInUse = bat(script: """
+                netstat -ano ^| findstr :${port}
+            """, returnStatus: true) == 0  // Returns 0 if port is in use
 
-                        echo "Is Port In Use : ${isPortInUse}"
-                    // If the port is in use, find and terminate the process
-                    if (isPortInUse) {
-                        echo "Port ${port} is in use. Finding and terminating the process..."
+            // Skip PID finding and termination if port is free
 
-                        // Run netstat to find the PID associated with the port
-                        def pid = bat(script: """
-                            @echo off
-                            for /f "tokens=5" %%a in ('netstat -ano ^| findstr :${port}') do echo %%a
-                        """, returnStdout: true).trim()
+            echo "PORT Status : ${isPortInUse}"
 
-                        echo "Netstat output: ${pid}"
+            if (isPortInUse) {
+                echo "Port ${port} is in use. Finding and terminating the process..."
 
-                        // Handle case when no PID is found (empty string from netstat)
-                        if (pid) {
-                            // Extract and validate the PID
-                            def validPid = pid.tokenize("\n").last().trim()
-                            echo "Identified PID: ${validPid}"
+                // PowerShell command to find PID associated with the port
+                def pid = bat(script: """
+                    powershell -Command "
+                        \$pid = (Get-NetTCPConnection -LocalPort ${port} | Select-Object -First 1).OwningProcess;
+                        if (\$pid) { Write-Output \$pid } else { exit 1 }
+                    "
+                """, returnStdout: true).trim()
 
-                            if (validPid.isInteger() && validPid.toInteger() > 0) {
-                                echo "Terminating process with PID: ${validPid}"
-                                bat "taskkill /F /PID ${validPid}"
-                            } else {
-                                echo "No valid process found on port ${port}."
-                            }
-                        } else {
-                            echo "No process found on port ${port}, continuing with deployment."
-                        }
-                    } else {
-                        echo "Port ${port} is free, skipping PID lookup and termination."
-                    }
+                echo "PowerShell output: ${pid}"
+
+                if (pid) {
+                    echo "Found PID: ${pid}, terminating the process..."
+                    // Kill the process using the PID
+                    bat "powershell Stop-Process -Id ${pid} -Force"
+                } else {
+                    echo "No valid process found on port ${port}."
                 }
+            } else {
+                echo "Port ${port} is free, skipping PID lookup and termination."
             }
         }
+    }
+}
 
 
         stage('Deploy Project : Customer-Feedback') {
