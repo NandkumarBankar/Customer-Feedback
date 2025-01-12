@@ -41,6 +41,7 @@ tools {
                         netstat -ano ^| findstr :${port}
                     """, returnStatus: true) == 0  // Returns 0 if port is in use, non-zero if free
 
+                        echo "Is Port In Use : ${isPortInUse}"
                     // If the port is in use, find and terminate the process
                     if (isPortInUse) {
                         echo "Port ${port} is in use. Finding and terminating the process..."
