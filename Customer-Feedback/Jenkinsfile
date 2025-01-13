@@ -77,18 +77,30 @@ tools {
             }
         }
 
-
-        stage('Deploy Project : Customer-Feedback') {
+  stage('Deploy Project : Customer-Feedback') {
             steps {
-                dir('Customer-Feedback') {
-                    // Run the new JAR file in the background
-                       bat 'start /MIN cmd.exe /c "java -jar target/Customer-Feedback.jar > output.log 2>&1"'
-                       sleep(time: 10, unit: 'SECONDS')
-                       echo "Application Started Successfully"
+                script {
+                    // Set BUILD_ID to avoid Jenkins killing the process
+                    bat '''
+                    set BUILD_ID=dontKillMe
+                    start /B java -jar target/Customer-Feedback.jar > output.log 2>&1
+                    '''
+                    echo 'Java service started successfully in the background.'
                 }
             }
         }
-    }
+
+//         stage('Deploy Project : Customer-Feedback') {
+//             steps {
+//                 dir('Customer-Feedback') {
+//                     // Run the new JAR file in the background
+//                        bat 'start /MIN cmd.exe /c "java -jar target/Customer-Feedback.jar > output.log 2>&1"'
+//                        sleep(time: 10, unit: 'SECONDS')
+//                        echo "Application Started Successfully"
+//                 }
+//             }
+//         }
+//     }
 
     post {
         always {
