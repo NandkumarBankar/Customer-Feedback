@@ -83,7 +83,7 @@ tools {
                 dir('Customer-Feedback') {
                     // Run the new JAR file in the background
                        bat 'start /MIN cmd.exe /c "java -jar target/Customer-Feedback.jar > output.log 2>&1"'
-                       sleep(time: 60, unit: 'SECONDS')
+                       sleep(time: 10, unit: 'SECONDS')
                        echo "Application Started Successfully"
                 }
             }
