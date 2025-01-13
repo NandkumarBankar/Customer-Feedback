@@ -82,7 +82,7 @@ tools {
             steps {
                 dir('Customer-Feedback') {
                     // Run the new JAR file in the background
-                    bat 'java -jar target/Customer-Feedback.jar'
+                    bat 'start java -jar target/Customer-Feedback.jar'
                        echo "Application Started Successfully"
                 }
             }

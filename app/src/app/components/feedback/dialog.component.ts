@@ -1,6 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { ApiService } from '../../services/api.service';
 import { Router } from '@angular/router';
+import { ApiLinks } from '../../api-links';
 
 
 @Component({
@@ -13,6 +14,7 @@ export class DialogComponent implements OnInit {
   isAdmin: boolean = false;
   feedback: any;
   feedbackText: string = '';
+  private apiLinks = ApiLinks;
 
   constructor(private apiService: ApiService,
     private router: Router,
@@ -32,13 +34,13 @@ export class DialogComponent implements OnInit {
   update() {
     this.feedback.feedback = this.feedbackText;
     if (this.isAdmin) {
-      this.apiService.update('http://localhost:8080/uam/admin/update/' + this.feedback.id, this.feedback).subscribe((response: any) => {
+      this.apiService.update(this.apiLinks.baseLink +'/admin/update/' + this.feedback.id, this.feedback).subscribe((response: any) => {
         console.log(response);
         this.router.navigateByUrl('/dashboard');
         alert('User ' + response.detail.userName + ' updated Successfully')
       })
     }
-    this.apiService.update('http://localhost:8080/uam/user/update/' + this.feedback.id, this.feedback).subscribe((response: any) => {
+    this.apiService.update(this.apiLinks.baseLink +'/user/update/' + this.feedback.id, this.feedback).subscribe((response: any) => {
       alert('User ' + response.detail.userName + ' updated Successfully')
       console.log(response);
     });

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { ApiLinks } from '../../api-links';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,7 +12,7 @@ import { ApiService } from '../../services/api.service';
 export class DashboardComponent implements OnInit {
 
   feedbackData: any[] = [];
-
+private apiLinks = ApiLinks;
 
   constructor(private router: Router, private apiService: ApiService) { }
   ngOnInit(): void {
@@ -23,14 +24,14 @@ export class DashboardComponent implements OnInit {
   }
 
   fillData() {
-    this.apiService.getAll('http://localhost:8080/uam/admin/getall').subscribe(response => {
+    this.apiService.getAll(this.apiLinks.baseLink +'/admin/getall').subscribe(response => {
       console.log(response);
       this.feedbackData = response;
     });
   }
   deleteFeedback(feedBack: any) {
     feedBack.feedback = '';
-    this.apiService.update('http://localhost:8080/uam/admin/update/' + feedBack.id, feedBack).subscribe(response => {
+    this.apiService.update(this.apiLinks.baseLink +'/admin/update/' + feedBack.id, feedBack).subscribe(response => {
       console.log(response);
       this.fillData();
     });

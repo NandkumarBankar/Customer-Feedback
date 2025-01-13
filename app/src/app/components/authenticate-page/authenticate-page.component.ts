@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { Router } from '@angular/router';
+import { ApiLinks } from '../../api-links';
 
 @Component({
   selector: 'app-authenticate-page',
@@ -15,7 +16,9 @@ export class AuthenticatePageComponent implements OnInit {
   isLogin: boolean = true;
   error: boolean = false;
 
+  private apiLinks = ApiLinks;
   constructor(private fb: FormBuilder,
+
     private apiService: ApiService,
     private router: Router,) {
   }
@@ -37,10 +40,10 @@ export class AuthenticatePageComponent implements OnInit {
 
   login() {
     console.log(this.loginRequest.value);
-    this.apiService.login('http://localhost:8080/uam/auth/login', this.loginRequest.value).subscribe((responseLogin: any) => {
+    this.apiService.login( this.apiLinks.baseLink +'/auth/login', this.loginRequest.value).subscribe((responseLogin: any) => {
       if (responseLogin.token !== 'User Not Found') {
         sessionStorage.setItem('#area61', responseLogin.token);
-        this.apiService.get('http://localhost:8080/uam/auth/getClaim').subscribe(response => {
+        this.apiService.get(this.apiLinks.baseLink +'/auth/getClaim').subscribe(response => {
           const roleAdmin = (response['user Role'] == 'ROLE_admin');
           sessionStorage.setItem('#area67', roleAdmin ? 'Yes' : 'No');
           sessionStorage.setItem('#area68', response.user);
@@ -56,7 +59,7 @@ export class AuthenticatePageComponent implements OnInit {
     if (roleAdmin) {
       this.router.navigateByUrl(url);
     } else {
-      this.apiService.get('http://localhost:8080/uam/user/get/' + sessionStorage.getItem('#area68')).subscribe((response: any) => {
+      this.apiService.get(this.apiLinks.baseLink +'/user/get/' + sessionStorage.getItem('#area68')).subscribe((response: any) => {
         this.router.navigateByUrl(url, { state: { feedback: response } });
       })
     }
@@ -65,7 +68,7 @@ export class AuthenticatePageComponent implements OnInit {
   signUp() {
     if (this.signUpRequest.value.userName.length != 0) {
       console.log(this.signUpRequest.value);
-      this.apiService.login('http://localhost:8080/uam/auth/create', this.signUpRequest.value).subscribe((response: any) => {
+      this.apiService.login(this.apiLinks.baseLink +'/auth/create', this.signUpRequest.value).subscribe((response: any) => {
         console.log(response);
         if (response.massage !== 'User Already Exist') {
           alert("User Created Successfully");
