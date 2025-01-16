@@ -5,9 +5,9 @@ spring:
   application:
     name: CUSTOMER FEEDBACK
   datasource:
-    url: jdbc:mysql://localhost:3306/customer_feedback
+    url: jdbc:mysql://192.168.1.20:3306/customer_feedback
     username: root
-    password: root
+    password: 123456789
   jpa:
     properties:
       hibernate:
