@@ -80,13 +80,8 @@ tools {
  stage('Deploy Project : Customer-Feedback') {
      steps {
          script {
-             // Set BUILD_ID to avoid Jenkins from killing the process
-             echo "Deploying the Customer-Feedback service."
-
-             // Start the Java process in a new command shell to keep it running after the stage
-             bat '''
-             set BUILD_ID=dontKillMe
-             start cmd /c "java -jar target/Customer-Feedback.jar > output.log 2>&1"
+         bat '''
+             start java -jar target/Customer-Feedback.jar
              echo "Java service started successfully."
              '''
          }
