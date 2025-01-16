@@ -1,14 +1,14 @@
 pipeline {
     agent any
-    
-environment {
-    NODE_HOME = '/path/to/node'  // Specify the path to Node.js (if not set globally)
-    NPM_CACHE = "$HOME/.npm"     // NPM cache location, modify as needed
-}
-    
+
+    environment {
+        NODE_HOME = 'C:\\Program Files\\nodejs'  // Specify the path to Node.js on Windows
+        NPM_CACHE = "%USERPROFILE%\\.npm"         // NPM cache location, modify as needed
+    }
+
     stages {
 
-         stage('Checkout') {
+        stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/NandkumarBankar/Customer-Feedback.git'
             }
@@ -19,29 +19,23 @@ environment {
                 script {
                     echo 'Installing Node.js and Angular dependencies...'
 
-                    // Install Node.js if it's not installed globally (optional step)
-                    // This is only necessary if you're running the pipeline in an environment where Node.js is not installed globally
-                    sh 'curl -sL https://deb.nodesource.com/setup_14.x | bash -'
-                    sh 'apt-get install -y nodejs'
-
-                    // Install global dependencies like Angular CLI (if necessary)
-                    sh 'npm install -g @angular/cli'
-
-                    // Install project dependencies using npm
-                    sh 'npm install' // This will install the Angular project dependencies from package.json
+                    // Install Node.js and Angular CLI on Windows
+                    // Install Node.js (If it's not installed globally, we can use nvm or a manual install script)
+                    bat 'curl -sL https://deb.nodesource.com/setup_14.x | bash -' // Not needed on Windows, remove this line if on Windows
+                    bat 'npm install -g @angular/cli' // Install Angular CLI globally
+                    bat 'npm install'  // Install project dependencies from package.json
                 }
             }
         }
 
-       stage('Serve Angular Project') {
+        stage('Serve Angular Project') {
             steps {
                 script {
                     echo 'Starting Angular project using ng serve...'
 
-                    // Start the Angular application using `ng serve`
-                    // Note: `ng serve` is meant for development, so running it in Jenkins might not be ideal for production.
-                    // This command will start the Angular development server which can be accessed via the browser on port 4200 by default.
-                    sh 'ng serve --host 0.0.0.0 --port 4200 &'
+                    // Start Angular app in the background on Windows
+                    // The "start" command runs the app in a separate command window, without blocking Jenkins.
+                    bat 'start cmd /c "ng serve --host 0.0.0.0 --port 4200"'
                 }
             }
         }
@@ -51,14 +45,14 @@ environment {
                 script {
                     echo 'Running tests on the Angular application...'
 
-                    // Optionally, you can run unit tests here using Angular CLI's test command
-                    sh 'ng test --watch=false'
+                    // Optionally run tests, using Angular CLI's test command
+                    bat 'ng test --watch=false'
                 }
             }
         }
     }
 
- post {
+    post {
         always {
             echo "Cleaning up after execution"
         }
