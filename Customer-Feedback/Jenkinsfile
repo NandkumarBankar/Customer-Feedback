@@ -77,17 +77,16 @@ tools {
             }
         }
 
- stage('Deploy Project : Customer-Feedback') {
-     steps {
-         script {
-         bat '''
-             start java -jar target/Customer-Feedback.jar
-             echo "Java service started successfully."
-             '''
-         }
-     }
-   }
- }
+  stage('Deploy Project : Customer-Feedback') {
+            steps {
+                dir('Customer-Feedback') {
+                    // Run the new JAR file in the background
+                    bat 'java -jar target/Customer-Feedback.jar'
+                    echo "Java service started successfully."
+                }
+            }
+        }
+    }
 
 
     post {
