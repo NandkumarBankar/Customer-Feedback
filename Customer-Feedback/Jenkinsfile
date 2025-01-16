@@ -77,45 +77,22 @@ tools {
             }
         }
 
-//   stage('Deploy Project : Customer-Feedback') {
-//       steps {
-//           script {
-//               // Set BUILD_ID to prevent Jenkins from terminating the background process
-//               bat '''
-//               set BUILD_ID=dontKillMe
-//               start /MIN cmd.exe /c "java -jar target/Customer-Feedback.jar > output.log 2>&1"
-//               '''
-//               echo 'Java service started successfully in the background.'
-//           }
-//       }
-//   }
+ stage('Deploy Project : Customer-Feedback') {
+     steps {
+         script {
+             // Set BUILD_ID to avoid Jenkins from killing the process
+             echo "Deploying the Customer-Feedback service."
 
-
-
-//         stage('Deploy Project : Customer-Feedback') {
-//             steps {
-//                 dir('Customer-Feedback') {
-//                     // Run the new JAR file in the background
-//                        bat 'start /MIN cmd.exe /c "java -jar target/Customer-Feedback.jar > output.log 2>&1"'
-//                        sleep(time: 10, unit: 'SECONDS')
-//                        echo "Application Started Successfully"
-//                 }
-//             }
-//         }
-
-        stage('Deploy Project : Customer-Feedback') {
-            steps {
-                dir('Customer-Feedback') {
-                   bat '''
-                   schtasks /create /tn "CustomerFeedbackService" /tr "java -jar target/Customer-Feedback.jar" /sc once /st 00:00 /f
-                   schtasks /run /tn "CustomerFeedbackService"
-                   echo "Java service started successfully using schtasks."
-                   '''
-
-                }
-            }
-        }
+             // Start the Java process in a new command shell to keep it running after the stage
+             bat '''
+             set BUILD_ID=dontKillMe
+             start cmd /c "java -jar target/Customer-Feedback.jar > output.log 2>&1"
+             echo "Java service started successfully."
+             '''
+         }
      }
+ }
+
 
     post {
         always {
