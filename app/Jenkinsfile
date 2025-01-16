@@ -13,7 +13,7 @@ environment {
                 git branch: 'main', url: 'https://github.com/NandkumarBankar/Customer-Feedback.git'
             }
         }
-        
+
         stage('Install Dependencies') {
             steps {
                 script {
@@ -33,18 +33,7 @@ environment {
             }
         }
 
-        stage('Build Angular Project') {
-            steps {
-                script {
-                    echo 'Building Angular project...'
-
-                    // Run the Angular build process (in production mode)
-                    sh 'ng build' // This builds the project in production mode
-                }
-            }
-        }
-
-        stage('Serve Angular Project') {
+       stage('Serve Angular Project') {
             steps {
                 script {
                     echo 'Starting Angular project using ng serve...'
