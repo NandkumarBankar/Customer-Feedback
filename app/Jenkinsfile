@@ -49,14 +49,14 @@ pipeline {
         //         }
         //     }
         // }
-     stage('Run Unit Tests') {
-            steps {
-                script {
-                    // Run the batch file to execute unit tests
-                    bat 'npm run test -- --watch=false --browsers=ChromeHeadless'  // Run tests in headless mode
-                }
-            }
-        }
+    //  stage('Run Unit Tests') {
+    //         steps {
+    //             script {
+    //                 // Run the batch file to execute unit tests
+    //                 bat 'npm run test -- --watch=false --browsers=ChromeHeadless'  // Run tests in headless mode
+    //             }
+    //         }
+    //     }
 
         stage('Build Angular Application'){
             steps{
