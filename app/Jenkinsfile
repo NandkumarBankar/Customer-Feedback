@@ -1,9 +1,11 @@
 pipeline {
     agent any
 
-    environment {
+
+  environment {
         NODE_HOME = 'C:\\Program Files\\nodejs'  // Specify the path to Node.js on Windows
         NPM_CACHE = "%USERPROFILE%\\.npm"         // NPM cache location, modify as needed
+        WORKSPACE_PATH = 'C:\\Users\\ADMIN\\.jenkins\\workspace\\Web APP\\app'  // Set path to the specific folder
     }
 
     stages {
@@ -17,6 +19,8 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
+                     // Change directory to the correct folder
+                    dir("${WORKSPACE_PATH}") {
                     echo 'Installing Node.js and Angular dependencies...'
 
                     // Install Node.js and Angular CLI on Windows
@@ -34,6 +38,7 @@ pipeline {
                         echo "http-server is already installed."
                     }
                 }
+              }
             }
         }
 
@@ -61,7 +66,10 @@ pipeline {
         stage('Build Angular Application'){
             steps{
                 script{
+                     // Change directory to the correct folder
+                    dir("${WORKSPACE_PATH}") {
                     bat 'npm run build'
+                    }
                 }
             }
         }
@@ -69,9 +77,12 @@ pipeline {
         stage('Deploy Angular Project') {
             steps {
                 script {
+                     // Change directory to the correct folder
+                    dir("${WORKSPACE_PATH}") {
                     echo 'Starting Angular project using ng serve...'
 
                   bat 'scp -r dist\\browser\\* user@staging-server:/path/to/deployment/folder'
+                    }
                 }
             }
         }
