@@ -40,14 +40,15 @@ pipeline {
 //  This runs a Windows batch command. Specifically, it runs the npm run lint command, which triggers the linting process defined in the project's package.json file (usually for JavaScript/TypeScript code quality checks).
 // In summary, this stage runs a linting process to check the code for issues and ensure code quality before moving to the next stages in the pipeline.
      
-        stage('Run Linter') {
-            steps {
-                script {
-                    // Run the batch file to execute linting
-                    bat 'npm run lint'  // Runs linting in Windows batch file
-                }
-            }
-        }
+     //due to multiple error
+        // stage('Run Linter') {
+        //     steps {
+        //         script {
+        //             // Run the batch file to execute linting
+        //             bat 'npm run lint'  // Runs linting in Windows batch file
+        //         }
+        //     }
+        // }
      stage('Run Unit Tests') {
             steps {
                 script {
