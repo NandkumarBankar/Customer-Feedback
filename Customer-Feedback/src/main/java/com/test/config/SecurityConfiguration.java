@@ -68,7 +68,7 @@ public class SecurityConfiguration {
     @Bean
     public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
         org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // Allow Angular app
+        configuration.setAllowedOrigins(List.of("http://localhost:4200","http://192.168.1.27:8090")); // Allow Angular app
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
