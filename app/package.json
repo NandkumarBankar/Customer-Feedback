@@ -2,9 +2,10 @@
   "name": "app",
   "version": "0.0.0",
   "scripts": {
+    "lint": "ng lint",
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng node your-app.jsbuild",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

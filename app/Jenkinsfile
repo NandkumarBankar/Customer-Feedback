@@ -21,36 +21,59 @@ pipeline {
 
                     // Install Node.js and Angular CLI on Windows
                     // Install Node.js (If it's not installed globally, we can use nvm or a manual install script)
-                    bat 'curl -sL https://deb.nodesource.com/setup_14.x | bash -' // Not needed on Windows, remove this line if on Windows
                     bat 'npm install -g @angular/cli' // Install Angular CLI globally
                     bat 'npm install'  // Install project dependencies from package.json
+
+                    // Check if http-server is installed globally and install if it's missing
+                    def httpServerInstalled = bat(script: 'npm list -g http-server', returnStatus: true) == 0
+                    if (!httpServerInstalled) {
+                        echo "http-server is not installed, installing..."  
+                        // install server for run file using // start http-server app -p 8065 // by using this script
+                        bat 'npm install -g http-server'
+                    } else {
+                        echo "http-server is already installed."
+                    }
                 }
             }
         }
 
-        stage('Serve Angular Project') {
+//  This runs a Windows batch command. Specifically, it runs the npm run lint command, which triggers the linting process defined in the project's package.json file (usually for JavaScript/TypeScript code quality checks).
+// In summary, this stage runs a linting process to check the code for issues and ensure code quality before moving to the next stages in the pipeline.
+     
+        stage('Run Linter') {
+            steps {
+                script {
+                    // Run the batch file to execute linting
+                    bat 'npm run lint'  // Runs linting in Windows batch file
+                }
+            }
+        }
+     stage('Run Unit Tests') {
+            steps {
+                script {
+                    // Run the batch file to execute unit tests
+                    bat 'npm run test -- --watch=false --browsers=ChromeHeadless'  // Run tests in headless mode
+                }
+            }
+        }
+
+        stage('Build Angular Application'){
+            steps{
+                script{
+                    bat 'npm run build'
+                }
+            }
+        }
+
+        stage('Deploy Angular Project') {
             steps {
                 script {
                     echo 'Starting Angular project using ng serve...'
 
-                    // Start Angular app in the background on Windows
-                    // The "start" command runs the app in a separate command window, without blocking Jenkins.
-                    bat 'start cmd /c "ng serve --host 0.0.0.0 --port 4200"'
+                  bat 'scp -r dist\\browser\\* user@staging-server:/path/to/deployment/folder'
                 }
             }
         }
-
-        stage('Test the Application') {
-            steps {
-                script {
-                    echo 'Running tests on the Angular application...'
-
-                    // Optionally run tests, using Angular CLI's test command
-                    bat 'ng test --watch=false'
-                }
-            }
-        }
-    }
 
     post {
         always {
