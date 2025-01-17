@@ -127,11 +127,11 @@ pipeline {
         stage('Deploy Angular Project') {
             steps {
                 script {
+                     def buildPath = "${WORKSPACE}/dist/app" 
                      // Change directory to the correct folder
-                    dir("${WORKSPACE_PATH}") {
+                    dir("${buildPath}") {
                     echo 'Starting Angular project using ng serve...'
 
-                  bat 'cd dist\\app'
                   bat "http-server browser -p ${port}"
                     }
                 }
