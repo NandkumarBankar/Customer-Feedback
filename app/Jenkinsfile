@@ -8,6 +8,10 @@ pipeline {
         WORKSPACE_PATH = 'C:\\Users\\ADMIN\\.jenkins\\workspace\\Web APP\\app'  // Set path to the specific folder
     }
 
+ parameters {
+        string(name: 'PORT', defaultValue: '8090', description: 'Port to serve the app')
+    }
+
     stages {
 
         stage('Checkout') {
@@ -73,7 +77,53 @@ pipeline {
                 }
             }
         }
+  stage('Check and Terminate Process') {
+            steps {
+                script {
+                    def port = params.PORT ?: 8090
 
+                    echo "Using port: ${port}"
+
+                    // Check if the port is already in use by running netstat
+                    def isPortInUse = (bat(script: """
+                        netstat -ano | findstr :${port}
+                    """, returnStatus: true) == 0) // Returns true when port is in use, false if free
+
+
+                    echo "Is Port In Use : ${isPortInUse}"
+                    // If the port is in use, find and terminate the process
+                    if (isPortInUse) {
+                        echo "Port ${port} is in use. Finding and terminating the process..."
+
+                        // Run netstat to find the PID associated with the port
+                        def pid = bat(script: """
+                            @echo off
+                            for /f "tokens=5" %%a in ('netstat -ano ^| findstr :${port}') do echo %%a
+                        """, returnStdout: true).trim()
+
+                        echo "Netstat output: ${pid}"
+
+                        // Handle case when no PID is found (empty string from netstat)
+                        if (pid) {
+                            // Extract and validate the PID
+                            def validPid = pid.tokenize("\n").last().trim()
+                            echo "Identified PID: ${validPid}"
+
+                            if (validPid.isInteger() && validPid.toInteger() > 0) {
+                                echo "Terminating process with PID: ${validPid}"
+                                bat "taskkill /F /PID ${validPid}"
+                            } else {
+                                echo "No valid process found on port ${port}."
+                            }
+                        } else {
+                            echo "No process found on port ${port}, continuing with deployment."
+                        }
+                    } else {
+                        echo "Port ${port} is free, skipping PID lookup and termination."
+                    }
+                }
+            }
+        }
         stage('Deploy Angular Project') {
             steps {
                 script {
@@ -81,7 +131,8 @@ pipeline {
                     dir("${WORKSPACE_PATH}") {
                     echo 'Starting Angular project using ng serve...'
 
-                  bat 'http-server browser -p 8090'
+                  bat 'cd dist\\app'
+                  bat "http-server browser -p ${port}"
                     }
                 }
             }
