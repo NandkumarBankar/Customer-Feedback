@@ -81,7 +81,7 @@ pipeline {
                     dir("${WORKSPACE_PATH}") {
                     echo 'Starting Angular project using ng serve...'
 
-                  bat 'scp -r dist\\browser\\* user@staging-server:/path/to/deployment/folder'
+                  bat 'http-server browser -p 8090'
                     }
                 }
             }
