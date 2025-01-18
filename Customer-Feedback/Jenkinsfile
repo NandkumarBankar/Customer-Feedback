@@ -28,6 +28,7 @@ tools {
             steps {
                 dir('Customer-Feedback') {
                     bat 'mvn clean package'
+                     echo "Application Build Successfully"
                 }
             }
         }
