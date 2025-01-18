@@ -11,14 +11,16 @@ tools {
 //             }
 //         }
 
-steps {
-        script {
-            // Perform the checkout with path filtering
-            checkout([$class: 'GitSCM',
-                      branches: [[name: 'main']],
-                      userRemoteConfigs: [[url: 'https://github.com/NandkumarBankar/Customer-Feedback.git']],
-                      extensions: [[$class: 'PathRestriction', excludedRegions: '', includedRegions: 'Customer-Feedback/*']]
-            ])
+    stage('Checkout') {
+        steps {
+            script {
+                // Perform the checkout with path filtering
+                checkout([$class: 'GitSCM',
+                          branches: [[name: 'main']],
+                          userRemoteConfigs: [[url: 'https://github.com/NandkumarBankar/Customer-Feedback.git']],
+                          extensions: [[$class: 'PathRestriction', excludedRegions: '', includedRegions: 'Customer-Feedback/*']]
+                ])
+            }
         }
     }
 

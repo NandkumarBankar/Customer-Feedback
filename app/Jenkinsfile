@@ -20,7 +20,8 @@ pipeline {
         //     }
         // }
 
-        steps {
+    stage('Checkout') {
+    steps {
         script {
             // Perform the checkout with path filtering
             checkout([$class: 'GitSCM', 
@@ -30,6 +31,8 @@ pipeline {
             ])
         }
     }
+}
+
 
         stage('Install Dependencies') {
             steps {
