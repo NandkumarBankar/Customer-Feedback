@@ -5,11 +5,22 @@ tools {
         maven 'Maven_3.9.9'  // Ensure this matches the configured Maven name
     }
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/NandkumarBankar/Customer-Feedback.git'
-            }
+//         stage('Checkout') {
+//             steps {
+//                 git branch: 'main', url: 'https://github.com/NandkumarBankar/Customer-Feedback.git'
+//             }
+//         }
+
+steps {
+        script {
+            // Perform the checkout with path filtering
+            checkout([$class: 'GitSCM',
+                      branches: [[name: 'main']],
+                      userRemoteConfigs: [[url: 'https://github.com/NandkumarBankar/Customer-Feedback.git']],
+                      extensions: [[$class: 'PathRestriction', excludedRegions: '', includedRegions: 'Customer-Feedback/*']]
+            ])
         }
+    }
 
         stage('Build : Customer-Feedback ') {
             steps {
