@@ -33,11 +33,4 @@ public class AdminController {
     ResponseEntity<List<UserData>> getAllUser() {
         return new ResponseEntity<>(userService.getAllUserData(), HttpStatus.CREATED);
     }
-
-
-
-
-
-
-
 }
